@@ -10,6 +10,15 @@ sides_attributes = {
     9:[3,3,3]
 }
 
+class grid:
+    def __init__(self,cells,rows,cols,cell_width,cell_height):
+        grid.self = self
+        grid.cells = cells
+        grid.rows = rows
+        grid.cols = cols
+        grid.cell_width = cell_width
+        grid.cell_height = cell_height
+
 class entity:
     def __init__(self,ID,shape_sides,position):
         entity.self = self
@@ -39,6 +48,9 @@ def initialize_clock():
     clock = pygame.time.Clock()
     return clock
 
+def display_grid(screen,gg):
+    pass
+
 def generate_enemies(game_grid):
     list_of_enemies = []
     row = len(game_grid)
@@ -66,8 +78,8 @@ def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies ,
         
         new_enemy_row, new_enemy_col = get_new_position(player_row,player_col,enemy_row,enemy_col) 
 
-        gg[new_enemy_row][new_enemy_col] = loe.ID
-        loe.position = (new_enemy_row*len(gg)) + new_enemy_col
+        gg[new_enemy_row][new_enemy_col] = loe[i].ID
+        loe[i].position = (new_enemy_row*len(gg)) + new_enemy_col
 
     return gg,loe
 
