@@ -64,40 +64,39 @@ def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies ,
         enemy_row = loe[i].position//(len(gg))     #y1
         enemy_col = loe[i].position%(len(gg[0]))   #x1
         
-        gg,loe = get_new_position(gg,loe,player_row,player_col,enemy_row,enemy_col) 
+        new_enemy_row, new_enemy_col = get_new_position(player_row,player_col,enemy_row,enemy_col) 
+
+        gg[new_enemy_row][new_enemy_col] = loe.ID
+        loe.position = (new_enemy_row*len(gg)) + new_enemy_col
 
     return gg,loe
 
-def get_new_position(gg,loe,y2,x2,y1,x1):
-    if x2 == x1:
-        if y1 < y2:
-            new_y1 = y1 + 1
-            gg[new_y1][x1] = loe.ID
-            loe.position = (new_y1*len(gg)) + x1    
-        elif y1 > y2:
-            new_y1 = y1 - 1
-            gg[new_y1][x1] = loe.ID
-            loe.position = (new_y1*len(gg)) + x1 
+
+def get_new_position(y2,x2,y1,x1): #Destination ---> (y2,x2) // start point ---> (y1,x1)
+    new_x1 = x1
+    new_y1 = y1
+
+    if x2 == x1 and y2 == y1:
+        pass
+    elif x2 == x1:
+        if y2 < y1:
+            new_y1 -= 1
         else:
-            pass 
+            new_y1 += 1      
+    elif y2 == y1:
+        if x2 < x1:
+            new_x1 -= 1
+        else:
+            new_x1 += 1
     else:
-        m = get_slope(x2)
-        b = get_intercept(m,y1,x1)
+        if y2 > y1:
+            new_y1 += 1
+        else:
+            new_y1 -= 1
+        if x2 < x1:
+            new_x1 -= 1
+        else:
+            new_x1 += 1
 
-        if x1 < x2:
-            new_x1 = x1 + 1
-        elif x1 > x2:
-            new_x1 = x1 - 1
-        
-        new_y1 = m*(new_x1) + b
-        gg[new_y1][new_x1] = loe.ID
-        loe.position = (new_y1*len(gg)) + new_x1
+    return new_y1, new_x1
 
-    return gg,loe
-
-def get_slope(y2,y1,x2,x1):
-    return (y2-y1)/(x2-x1)
-
-def get_intercept(m,y1,x1):
-    return y1-(m*x1)
-    
