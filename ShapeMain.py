@@ -19,7 +19,7 @@ def run_pygame():
             if sf.event.type == sf.pygame.QUIT:
                 running = False
         
-        game_grid, list_of_enemies = update_enemies_position(game_grid, list_of_enemies, player)            
+        game_grid, list_of_enemies = sf.update_enemies_position(game_grid, list_of_enemies, player)            
         screen.fill((0,0,0))
         clock.tick(25)
         sf.pygame.display.flip()

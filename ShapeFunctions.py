@@ -11,12 +11,11 @@ sides_attributes = {
 }
 
 class entity:
-    def __init__(self,ID,shape_sides,position,health):
+    def __init__(self,ID,shape_sides,position):
         entity.self = self
         entity.ID = ID
         entity.shape_sides = shape_sides
         entity.position = position
-        entity.health = health
 
 class player(entity):
     def __init__(self,ID,shape_sides,position):
@@ -58,42 +57,41 @@ def generate_enemies(game_grid):
     return game_grid, list_of_enemies
 
 def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies , p = player
+    player_row = p.position//(len(gg))      #y2
+    player_col = p.position%(len(gg[0]))    #x2
+
     for i in range(len(loe)):
         enemy_row = loe[i].position//(len(gg))     #y1
         enemy_col = loe[i].position%(len(gg[0]))   #x1
         
-        player_row = p[i].position//(len(gg))      #y2
-        player_col = p[i].position%(len(gg[0]))    #x2
+        gg,loe = get_new_position(gg,loe,player_row,player_col,enemy_row,enemy_col) 
 
-        #TODO ----------------------
-        # Breaks if x2=x1
-        # 
-        #----------------------------
+    return gg,loe
 
-        m = get_slope(player_col)
-        b = get_intercept(m,enemy_row,enemy_col)
-
-        if enemy_col < player_col:
-            new_enemy_col = enemy_col + 1
-            new_enemy_row = m*(new_enemy_col) + b
-            gg[new_enemy_row][new_enemy_col] = loe.ID
-            loe.position = (new_enemy_row*len(gg)) + new_enemy_col
-        else if enemy_col > player_col:
-            new_enemy_col = enemy_col - 1
-            new_enemy_row = m*(new_enemy_col) + b
-            gg[new_enemy_row][new_enemy_col] = loe.ID
-            loe.position = (new_enemy_row*len(gg)) + new_enemy_col
+def get_new_position(gg,loe,y2,x2,y1,x1):
+    if x2 == x1:
+        if y1 < y2:
+            new_y1 = y1 + 1
+            gg[new_y1][x1] = loe.ID
+            loe.position = (new_y1*len(gg)) + x1    
+        elif y1 > y2:
+            new_y1 = y1 - 1
+            gg[new_y1][x1] = loe.ID
+            loe.position = (new_y1*len(gg)) + x1 
         else:
-            if enemy_row < player_row:
-                new_enemy_row = enemy_row + 1
-                gg[new_enemy_row][enemy_col] = loe.ID
-                loe.position = (new_enemy_row*len(gg)) + enemy_col    
-            else if enemy_row > player_row:
-                new_enemy_row = enemy_row - 1
-                gg[new_enemy_row][enemy_col] = loe.ID
-                loe.position = (new_enemy_row*len(gg)) + enemy_col 
-            else:
-                pass           
+            pass 
+    else:
+        m = get_slope(x2)
+        b = get_intercept(m,y1,x1)
+
+        if x1 < x2:
+            new_x1 = x1 + 1
+        elif x1 > x2:
+            new_x1 = x1 - 1
+        
+        new_y1 = m*(new_x1) + b
+        gg[new_y1][new_x1] = loe.ID
+        loe.position = (new_y1*len(gg)) + new_x1
 
     return gg,loe
 
