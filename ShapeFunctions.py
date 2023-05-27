@@ -10,25 +10,32 @@ sides_attributes = {
     9:[3,3,3]
 }
 
+colors = {
+    0:(0,0,0),
+    1:(255,255,255),
+    2:(0,255,0)
+}
+
 class grid:
     def __init__(self,cells,rows,cols,cell_width,cell_height):
-        grid.self = self
-        grid.cells = cells
-        grid.rows = rows
-        grid.cols = cols
-        grid.cell_width = cell_width
-        grid.cell_height = cell_height
+        self.cells = cells
+        self.rows = rows
+        self.cols = cols
+        self.cell_width = cell_width
+        self.cell_height = cell_height
 
 class entity:
     def __init__(self,ID,shape_sides,position):
-        entity.self = self
-        entity.ID = ID
-        entity.shape_sides = shape_sides
-        entity.position = position
+        self.ID = ID
+        self.shape_sides = shape_sides
+        self.position = position
 
 class player(entity):
     def __init__(self,ID,shape_sides,position):
         super().__init__(ID,shape_sides,position)
+        #self.ID = ID 
+        #self.shape_sides = shape_sides 
+        #self.position = position
 
 class enemy(entity):
     def __init__(self,ID,shape_sides,position):
@@ -49,38 +56,71 @@ def initialize_clock():
     return clock
 
 def display_grid(screen,gg):
-    pass
+    rows = gg.rows
+    cols = gg.cols
 
+    cell_width = gg.cell_width
+    cell_height =gg.cell_height
+
+    x_coord = 0
+    y_coord = 0
+
+    for i in range(rows):
+        for j in range(cols):
+            if gg.cells[i][j] == 0:
+                pygame.draw.rect(screen,colors[0],pygame.Rect(x_coord,y_coord,cell_width,cell_height)) 
+            elif gg.cells[i][j] == 1:
+                pygame.draw.rect(screen,colors[1],pygame.Rect(x_coord,y_coord,cell_width,cell_height)) 
+            else:
+                pygame.draw.rect(screen,colors[2],pygame.Rect(x_coord,y_coord,cell_width,cell_height))
+            x_coord += cell_width
+        x_coord = 0
+        y_coord += cell_height 
+
+def place_player_on_grid(gg,row,col):
+    gg[row][col] = 1
+    return gg
+    
 def generate_enemies(game_grid):
     list_of_enemies = []
     row = len(game_grid)
     col = len(game_grid[0])
     
     for i in range(2,14):
-        position = r.randint(0,row*col)
-        while (game_grid[position//row][position%col] != 0):
-            position = r.randint(0,row*col)
+        enemy_position = r.randint(0,(row*col)-1)
+        while (game_grid[enemy_position//row][enemy_position%col] != 0):
+            enemy_position = r.randint(0,row*col)
 
-        game_grid[position//row][position%col] = i
-        enemyInstance = enemy(i,1,position)
+        game_grid[enemy_position//row][enemy_position%col] = i
 
-        list_of_enemies.append(enemyInstance)
-
+        list_of_enemies.append(enemy(i,1,enemy_position))
+   
+    print(enemy_position) 
+    print("-----------------------")
+    
     return game_grid, list_of_enemies
 
 def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies , p = player
-    player_row = p.position//(len(gg))      #y2
-    player_col = p.position%(len(gg[0]))    #x2
+    print(p)
+    player_row = p//(len(gg))      #y2
+    player_col = p%(len(gg[0]))    #x2
+
+    print("Player coord")
+    print(player_row,player_col)
+    print()
 
     for i in range(len(loe)):
         enemy_row = loe[i].position//(len(gg))     #y1
         enemy_col = loe[i].position%(len(gg[0]))   #x1
-        
+
+        gg[enemy_row][enemy_col] = 0 
+            
         new_enemy_row, new_enemy_col = get_new_position(player_row,player_col,enemy_row,enemy_col) 
+        print(str(new_enemy_row) + " " + str(new_enemy_col))
 
         gg[new_enemy_row][new_enemy_col] = loe[i].ID
         loe[i].position = (new_enemy_row*len(gg)) + new_enemy_col
-
+    
     return gg,loe
 
 
