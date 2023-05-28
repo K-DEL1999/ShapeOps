@@ -33,9 +33,6 @@ class entity:
 class player(entity):
     def __init__(self,ID,shape_sides,position):
         super().__init__(ID,shape_sides,position)
-        #self.ID = ID 
-        #self.shape_sides = shape_sides 
-        #self.position = position
 
 class enemy(entity):
     def __init__(self,ID,shape_sides,position):
@@ -95,19 +92,11 @@ def generate_enemies(game_grid):
 
         list_of_enemies.append(enemy(i,1,enemy_position))
    
-    print(enemy_position) 
-    print("-----------------------")
-    
     return game_grid, list_of_enemies
 
 def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies , p = player
-    print(p)
     player_row = p//(len(gg))      #y2
     player_col = p%(len(gg[0]))    #x2
-
-    print("Player coord")
-    print(player_row,player_col)
-    print()
 
     for i in range(len(loe)):
         enemy_row = loe[i].position//(len(gg))     #y1
@@ -116,7 +105,6 @@ def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies ,
         gg[enemy_row][enemy_col] = 0 
             
         new_enemy_row, new_enemy_col = get_new_position(player_row,player_col,enemy_row,enemy_col) 
-        print(str(new_enemy_row) + " " + str(new_enemy_col))
 
         gg[new_enemy_row][new_enemy_col] = loe[i].ID
         loe[i].position = (new_enemy_row*len(gg)) + new_enemy_col
@@ -128,9 +116,7 @@ def get_new_position(y2,x2,y1,x1): #Destination ---> (y2,x2) // start point --->
     new_x1 = x1
     new_y1 = y1
 
-    if x2 == x1 and y2 == y1:
-        pass
-    elif x2 == x1:
+    if x2 == x1:
         if y2 < y1:
             new_y1 -= 1
         else:
