@@ -1,8 +1,9 @@
 import ShapeFunctions as sf
 
-GRID_ROWS = 20
+GRID_ROWS = 100
 GRID_COLS = GRID_ROWS
-UPDATE_ENEMY_POSITION_AFTER_THIS_MANY_ITERATIONS = 40
+FRAME_CAP = 50
+UPDATE_ENEMY_POSITION_AFTER_THIS_MANY_ITERATIONS = 10
 
 def run_pygame():
     screen_dimensions = sf.initialize_screen_size()
@@ -28,6 +29,7 @@ def run_pygame():
        
         if game_state == 0:
             game_state = 1
+        
         elif game_state == 1:
             #---------------------------------------------------------------------- 
             # PLAYER MOVEMENT
@@ -61,17 +63,24 @@ def run_pygame():
                     player.position = player_row*GRID_ROWS + player_col+1
             #----------------------------------------------------------------------
 
+            #-----------------------------------------------------------------------------------------------------------------------
+            #UPDATE ENEMY POSITION 
+            #-----------------------------------------------------------------------------------------------------------------------
             if update_enemy_position_count == UPDATE_ENEMY_POSITION_AFTER_THIS_MANY_ITERATIONS:
                 game_grid.cells, list_of_enemies = sf.update_enemies_position(game_grid.cells, list_of_enemies, player.position)
                 update_enemy_position_count = 0
             update_enemy_position_count += 1
+            #-----------------------------------------------------------------------------------------------------------------------
+            
+            game_state = sf.check_for_collisions(player,list_of_enemies)
 
             screen.fill((0,100,200))
             sf.display_grid(screen,game_grid) 
+        
         elif game_state == 2:
             screen.fill((0,100,200))
         
-        clock.tick(25)
+        clock.tick(FRAME_CAP)
         sf.pygame.display.flip()
 
 def printGrid(game_grid):

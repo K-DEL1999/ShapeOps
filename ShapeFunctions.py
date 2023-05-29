@@ -111,7 +111,6 @@ def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies ,
     
     return gg,loe
 
-
 def get_new_position(y2,x2,y1,x1): #Destination ---> (y2,x2) // start point ---> (y1,x1)
     new_x1 = x1
     new_y1 = y1
@@ -137,4 +136,16 @@ def get_new_position(y2,x2,y1,x1): #Destination ---> (y2,x2) // start point --->
             new_x1 += 1
 
     return new_y1, new_x1
+
+def check_for_collisions(p,loe):
+    for i in range(len(loe)):
+        if p.position == loe[i].position:
+            return 2    
+    
+    return 1
+
+
+
+
+ 
 
