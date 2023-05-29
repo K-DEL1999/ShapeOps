@@ -13,7 +13,8 @@ sides_attributes = {
 colors = {
     0:(0,0,0),
     1:(255,255,255),
-    2:(0,255,0)
+    2:(0,255,0),
+    3:(0,255,255)
 }
 
 class grid:
@@ -31,8 +32,9 @@ class entity:
         self.position = position
 
 class player(entity):
-    def __init__(self,ID,shape_sides,position):
+    def __init__(self,ID,shape_sides,position,direction):
         super().__init__(ID,shape_sides,position)
+        self.direction = direction
 
 class enemy(entity):
     def __init__(self,ID,shape_sides,position):
@@ -66,11 +68,14 @@ def display_grid(screen,gg):
         for j in range(cols):
             if gg.cells[i][j] == 0:
                 pygame.draw.rect(screen,colors[0],pygame.Rect(x_coord,y_coord,cell_width,cell_height)) 
+            elif gg.cells[i][j] == -1:
+                pygame.draw.circle(screen,colors[3],(x_coord+(cell_width//2),y_coord+(cell_height//2)),cell_width//2,0)
             elif gg.cells[i][j] == 1:
                 pygame.draw.rect(screen,colors[1],pygame.Rect(x_coord,y_coord,cell_width,cell_height)) 
             else:
                 pygame.draw.rect(screen,colors[2],pygame.Rect(x_coord,y_coord,cell_width,cell_height))
             x_coord += cell_width
+        
         x_coord = 0
         y_coord += cell_height 
 
@@ -93,6 +98,41 @@ def generate_enemies(game_grid):
         list_of_enemies.append(enemy(i,1,enemy_position))
    
     return game_grid, list_of_enemies
+
+def update_player_projectiles(pp,gg):
+    new_pp = []
+    rows = len(gg)
+    cols = len(gg[0])
+
+    for i in range(len(pp)):
+        gg[pp[i][0]][pp[i][1]] = 0
+
+        if pp[i][2] == 1:
+            if pp[i][0] > 0:
+                pp[i][0] -= 1
+                new_pp.append(pp[i])
+                gg[pp[i][0]][pp[i][1]] = -1 
+                
+        elif pp[i][2] == 2:
+            if pp[i][1] > 0:
+                pp[i][1] -= 1
+                new_pp.append(pp[i])
+                gg[pp[i][0]][pp[i][1]] = -1 
+
+        elif pp[i][2] == 3:
+            if pp[i][0] < rows-1:
+                pp[i][0] += 1
+                new_pp.append(pp[i])
+                gg[pp[i][0]][pp[i][1]] = -1 
+
+        elif pp[i][2] == 4:
+            if pp[i][1] < cols-1:
+                pp[i][1] += 1 
+                new_pp.append(pp[i])
+                gg[pp[i][0]][pp[i][1]] = -1 
+        
+    return new_pp, gg 
+
 
 def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies , p = player
     player_row = p//(len(gg))      #y2
@@ -143,7 +183,6 @@ def check_for_collisions(p,loe):
             return 2    
     
     return 1
-
 
 
 

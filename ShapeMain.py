@@ -4,6 +4,7 @@ GRID_ROWS = 100
 GRID_COLS = GRID_ROWS
 FRAME_CAP = 50
 UPDATE_ENEMY_POSITION_AFTER_THIS_MANY_ITERATIONS = 10
+TIME_BETWEEN_EACH_SHOT = 5
 
 def run_pygame():
     screen_dimensions = sf.initialize_screen_size()
@@ -12,11 +13,13 @@ def run_pygame():
     
     game_grid = sf.grid([[0]*GRID_ROWS for i in range(GRID_COLS)],GRID_ROWS,GRID_COLS,screen_dimensions[0]/GRID_COLS,screen_dimensions[1]/GRID_ROWS)
     
-    player = sf.player(1,1,0)
+    player = sf.player(1,1,0,1)
+    player_projectiles = []
 
     game_grid.cells = sf.place_player_on_grid(game_grid.cells,player.position//GRID_ROWS,player.position%GRID_COLS)
     game_grid.cells, list_of_enemies = sf.generate_enemies(game_grid.cells)
     
+    time_for_shot_count = 0
     update_enemy_position_count = 0
     game_state = 0
      
@@ -34,6 +37,9 @@ def run_pygame():
             #---------------------------------------------------------------------- 
             # PLAYER MOVEMENT
             #----------------------------------------------------------------------        
+            if player_projectiles:
+                player_projectiles, game_grid.cells = sf.update_player_projectiles(player_projectiles,game_grid.cells)
+            
             player_row = player.position//GRID_ROWS
             player_col = player.position%GRID_COLS
                
@@ -42,25 +48,44 @@ def run_pygame():
                 if player_row > 0:
                     game_grid.cells[player_row][player_col] = 0
                     game_grid.cells[player_row-1][player_col] = 1 
-                    player.position = (player_row-1)*GRID_ROWS + player_col 
+                    player.position = (player_row-1)*GRID_ROWS + player_col
+                    player.direction = 1 #up
 
             elif keys[ord('a')]: #if sf.event.key == ord('a'):
                 if player_col > 0:
                     game_grid.cells[player_row][player_col] = 0
                     game_grid.cells[player_row][player_col-1] = 1
                     player.position = player_row*GRID_ROWS + player_col-1
-
+                    player.direction = 2 #left
+                     
             elif keys[ord('s')]:# if sf.event.key == ord('s'):
                 if player_row < GRID_ROWS-1:
                     game_grid.cells[player_row][player_col] = 0
                     game_grid.cells[player_row+1][player_col] = 1
                     player.position = (player_row+1)*GRID_ROWS + player_col
+                    player.direction = 3 #down
             
             elif keys[ord('d')]: #if sf.event.key == ord('d'):
                 if player_col < GRID_COLS-1:
                     game_grid.cells[player_row][player_col] = 0
                     game_grid.cells[player_row][player_col+1] = 1
                     player.position = player_row*GRID_ROWS + player_col+1
+                    player.direction = 4 #right
+           
+            # PROJECTILE MOVEMENT
+            if time_for_shot_count >= TIME_BETWEEN_EACH_SHOT:
+                if keys[ord(' ')]:
+                    if player.direction == 1 and player_row > 0:
+                        player_projectiles.append([player_row-1,player_col,player.direction])
+                    elif player.direction == 3 and player_row < GRID_ROWS-1:
+                        player_projectiles.append([player_row+1,player_col,player.direction])
+                    elif player.direction == 2 and player_col > 0:
+                        player_projectiles.append([player_row,player_col-1,player.direction])
+                    elif player.direction == 4 and player_col < GRID_COLS-1:
+                        player_projectiles.append([player_row,player_col+1,player.direction])
+                    time_for_shot_count = 0
+               
+            time_for_shot_count +=1
             #----------------------------------------------------------------------
 
             #-----------------------------------------------------------------------------------------------------------------------
