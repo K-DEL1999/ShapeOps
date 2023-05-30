@@ -1,5 +1,7 @@
 import random as r, pygame
 
+ENEMY_COUNT = 40
+
 sides_attributes = {
     3:[1,1,1],
     4:[2,1,1],
@@ -88,7 +90,7 @@ def generate_enemies(game_grid):
     row = len(game_grid)
     col = len(game_grid[0])
     
-    for i in range(2,14):
+    for i in range(2,ENEMY_COUNT+2):
         enemy_position = r.randint(0,(row*col)-1)
         while (game_grid[enemy_position//row][enemy_position%col] != 0):
             enemy_position = r.randint(0,row*col)
@@ -142,13 +144,13 @@ def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies ,
         enemy_row = loe[i].position//(len(gg))     #y1
         enemy_col = loe[i].position%(len(gg[0]))   #x1
 
-        gg[enemy_row][enemy_col] = 0 
-            
-        new_enemy_row, new_enemy_col = get_new_position(player_row,player_col,enemy_row,enemy_col) 
-
-        gg[new_enemy_row][new_enemy_col] = loe[i].ID
-        loe[i].position = (new_enemy_row*len(gg)) + new_enemy_col
     
+        new_enemy_row, new_enemy_col = get_new_position(player_row,player_col,enemy_row,enemy_col) 
+        if gg[new_enemy_row][new_enemy_col] not in range(2,ENEMY_COUNT+2):
+            gg[enemy_row][enemy_col] = 0 
+            gg[new_enemy_row][new_enemy_col] = loe[i].ID
+            loe[i].position = (new_enemy_row*len(gg)) + new_enemy_col
+        
     return gg,loe
 
 def get_new_position(y2,x2,y1,x1): #Destination ---> (y2,x2) // start point ---> (y1,x1)
@@ -185,6 +187,44 @@ def check_for_collisions(p,loe):
     return 1
 
 
+def enemies_projectile_collisions(loe,pp,gg):
+    new_loe = []
+    new_pp = []
+    used_projectiles = []
+
+
+    
+    for i in range(len(loe)):
+        collision = 0
+        enemy_row = loe[i].position//len(gg)
+        enemy_col = loe[i].position%len(gg[0])
+
+        for j in range(len(pp)):
+            if enemy_row == pp[j][0] and enemy_col == pp[j][1]:
+                collision = 1
+                gg[enemy_row][enemy_col] = 0
+                used_projectiles.append(j)
+                break;
+
+        if not collision:
+            new_loe.append(loe[i])
+
+    for i in range(len(pp)):
+        if i not in used_projectiles:
+            new_pp.append(pp[i])
+
+    return new_loe, new_pp, gg
+
+
+
 
  
+
+
+
+
+
+
+
+
 

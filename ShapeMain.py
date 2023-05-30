@@ -75,14 +75,14 @@ def run_pygame():
             # PROJECTILE MOVEMENT
             if time_for_shot_count >= TIME_BETWEEN_EACH_SHOT:
                 if keys[ord(' ')]:
-                    if player.direction == 1 and player_row > 0:
-                        player_projectiles.append([player_row-1,player_col,player.direction])
-                    elif player.direction == 3 and player_row < GRID_ROWS-1:
-                        player_projectiles.append([player_row+1,player_col,player.direction])
-                    elif player.direction == 2 and player_col > 0:
-                        player_projectiles.append([player_row,player_col-1,player.direction])
-                    elif player.direction == 4 and player_col < GRID_COLS-1:
-                        player_projectiles.append([player_row,player_col+1,player.direction])
+                    if player.direction == 1 and player_row > 1:
+                        player_projectiles.append([player_row-2,player_col,player.direction])
+                    elif player.direction == 3 and player_row < GRID_ROWS-2:
+                        player_projectiles.append([player_row+2,player_col,player.direction])
+                    elif player.direction == 2 and player_col > 1:
+                        player_projectiles.append([player_row,player_col-2,player.direction])
+                    elif player.direction == 4 and player_col < GRID_COLS-2:
+                        player_projectiles.append([player_row,player_col+2,player.direction])
                     time_for_shot_count = 0
                
             time_for_shot_count +=1
@@ -97,6 +97,7 @@ def run_pygame():
             update_enemy_position_count += 1
             #-----------------------------------------------------------------------------------------------------------------------
             
+            list_of_enemies, player_projectiles, game_grid.cells = sf.enemies_projectile_collisions(list_of_enemies,player_projectiles,game_grid.cells)
             game_state = sf.check_for_collisions(player,list_of_enemies)
 
             screen.fill((0,100,200))
