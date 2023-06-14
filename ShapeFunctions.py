@@ -1,4 +1,4 @@
-import random as r, pygame
+import random as r, pygame, math
 
 ENEMY_COUNT = 40
 
@@ -28,23 +28,23 @@ class grid:
         self.cell_height = cell_height
 
 class entity:
-    def __init__(self,ID,shape_sides,position):
+    def __init__(self,ID,shape_sides,position,direction):
         self.ID = ID
         self.shape_sides = shape_sides
         self.position = position
+        self.direction = direction
 
 class player(entity):
     def __init__(self,ID,shape_sides,position,direction):
-        super().__init__(ID,shape_sides,position)
-        self.direction = direction
+        super().__init__(ID,shape_sides,position,direction)
 
 class enemy(entity):
-    def __init__(self,ID,shape_sides,position):
-        super().__init__(ID,shape_sides,position)
+    def __init__(self,ID,shape_sides,position,direction):
+        super().__init__(ID,shape_sides,position,direction)
        
-def initialize_screen_size():
-    WIDTH = 700
-    HEIGHT = 700
+def initialize_screen_size(W,H):
+    WIDTH = W
+    HEIGHT = H
     return [WIDTH,HEIGHT]
 
 def initialize_pygame(screen_dimensions):
@@ -79,7 +79,7 @@ def display_grid(screen,gg):
             x_coord += cell_width
         
         x_coord = 0
-        y_coord += cell_height 
+        y_coord += cell_height
 
 def place_player_on_grid(gg,row,col):
     gg[row][col] = 1
@@ -97,7 +97,7 @@ def generate_enemies(game_grid):
 
         game_grid[enemy_position//row][enemy_position%col] = i
 
-        list_of_enemies.append(enemy(i,1,enemy_position))
+        list_of_enemies.append(enemy(i,3,enemy_position,1))
    
     return game_grid, list_of_enemies
 
@@ -144,7 +144,6 @@ def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies ,
         enemy_row = loe[i].position//(len(gg))     #y1
         enemy_col = loe[i].position%(len(gg[0]))   #x1
 
-    
         new_enemy_row, new_enemy_col = get_new_position(player_row,player_col,enemy_row,enemy_col) 
         if gg[new_enemy_row][new_enemy_col] not in range(2,ENEMY_COUNT+2):
             gg[enemy_row][enemy_col] = 0 
@@ -186,13 +185,10 @@ def check_for_collisions(p,loe):
     
     return 1
 
-
 def enemies_projectile_collisions(loe,pp,gg):
     new_loe = []
     new_pp = []
     used_projectiles = []
-
-
     
     for i in range(len(loe)):
         collision = 0
