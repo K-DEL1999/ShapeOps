@@ -35,8 +35,9 @@ class entity:
         self.direction = direction
 
 class player(entity):
-    def __init__(self,ID,shape_sides,position,direction):
+    def __init__(self,ID,shape_sides,position,direction,kill_count):
         super().__init__(ID,shape_sides,position,direction)
+        self.kill_count = kill_count
 
 class enemy(entity):
     def __init__(self,ID,shape_sides,position,direction):
@@ -85,7 +86,7 @@ def place_player_on_grid(gg,row,col):
     gg[row][col] = 1
     return gg
     
-def generate_enemies(game_grid):
+def generate_enemies(game_grid,ps):
     list_of_enemies = []
     row = len(game_grid)
     col = len(game_grid[0])
@@ -97,7 +98,7 @@ def generate_enemies(game_grid):
 
         game_grid[enemy_position//row][enemy_position%col] = i
 
-        list_of_enemies.append(enemy(i,3,enemy_position,1))
+        list_of_enemies.append(enemy(i,r.randint(3,ps+1),enemy_position,1))
    
     return game_grid, list_of_enemies
 
@@ -149,6 +150,15 @@ def update_enemies_position(gg,loe,p): #gg = game_grid , loe = list_of_enemies ,
             gg[enemy_row][enemy_col] = 0 
             gg[new_enemy_row][new_enemy_col] = loe[i].ID
             loe[i].position = (new_enemy_row*len(gg)) + new_enemy_col
+            
+            if enemy_row > new_enemy_row: # up
+                loe[i].direction = 1
+            elif enemy_row < new_enemy_row: # down 
+                loe[i].direction = 3
+            elif enemy_col > new_enemy_col: # left
+                loe[i].direction = 2
+            elif enemy_col < new_enemy_col: # right
+                loe[i].direction = 4
         
     return gg,loe
 
@@ -182,10 +192,9 @@ def check_for_collisions(p,loe):
     for i in range(len(loe)):
         if p.position == loe[i].position:
             return 2    
-    
     return 1
 
-def enemies_projectile_collisions(loe,pp,gg):
+def enemies_projectile_collisions(loe,pp,gg,kc):
     new_loe = []
     new_pp = []
     used_projectiles = []
@@ -200,6 +209,7 @@ def enemies_projectile_collisions(loe,pp,gg):
                 collision = 1
                 gg[enemy_row][enemy_col] = 0
                 used_projectiles.append(j)
+                kc += 1
                 break;
 
         if not collision:
@@ -209,7 +219,7 @@ def enemies_projectile_collisions(loe,pp,gg):
         if i not in used_projectiles:
             new_pp.append(pp[i])
 
-    return new_loe, new_pp, gg
+    return new_loe, new_pp, gg, kc
 
 
 
