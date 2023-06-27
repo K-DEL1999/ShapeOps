@@ -130,11 +130,11 @@ def run_pygame():
             update_enemy_position_count += 1
             #-----------------------------------------------------------------------------------------------------------------------
            
-            #---------collision--------------# 
+            #---------COLLISION--------------# 
             list_of_enemies, player_projectiles, game_grid.cells, player.kill_count = sf.enemies_projectile_collisions(list_of_enemies,player_projectiles,game_grid.cells,player.kill_count)
             #--------------------------------#
 
-            #--------Respawn Enenmies--------#
+            #--------RESPAWN ENEMIES--------#
             if len(list_of_enemies) == 0:
                 enemy_respawn_count += 1
             if enemy_respawn_count == ENEMY_RESPAWN_TIME:
