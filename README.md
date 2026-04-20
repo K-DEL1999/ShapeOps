@@ -9,6 +9,8 @@ ShapeOps is a game inspired by love of mathemtics and my love of zombies. The pr
 
 # Layout Of Code
 
+## Initialization
+
 The main code begins by defining variables that will set the boundaries of the window that will run the game. 
 
 ```python
@@ -33,7 +35,7 @@ def run_pygame():
 .
 ```
 
-Following the screen initialization is the grid initialization. The grid enables allows the prorgam to keep track of everything on the screen.
+Following the screen initialization is the grid initialization and setting the starting state of other variables. The grid enables allows the prorgam to keep track of everything on the screen.
 
 ```python
 .
@@ -56,3 +58,22 @@ Following the screen initialization is the grid initialization. The grid enables
 .
 .
 ```
+
+## Game Loop
+
+Once the screen and grid are rady we can begin rendering by entering an infinite loop.
+
+```python
+.
+.
+.
+    while running:
+        .
+        .
+        .
+.
+.
+.
+```
+
+# 
