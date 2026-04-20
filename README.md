@@ -78,7 +78,7 @@ Once the screen and grid are rady we can begin rendering by entering an infinite
 
 The game loop is broken up into multiple sections - **updating player position**, **udpating projectile position**, **updating enemy position**, **possible collisions** and **Respawning Enemies**
 
-### updating player position
+### Updating player position
 
 We keep track of the players position by assigning them a coordinate from the grid. Depending on whether 'w', 'a', 's', or 'd' the position is updated accordingly. The new position us updated with a 1 while the old position is set to 0.
 
@@ -123,7 +123,7 @@ We keep track of the players position by assigning them a coordinate from the gr
     
 ```
 
-### updating projectile position
+### Updating projectile position
 
 Projectiles are kept track of in the `player_projectiles` list. Everytime a new one is created it is appended to the list. Updating the projectiles position is easy since they only move in one direction. The direction is based on the players direction at the time of firing.
 
@@ -154,7 +154,7 @@ Projectiles are kept track of in the `player_projectiles` list. Everytime a new 
 .
 ```
 
-### updating enemy position
+### Updating enemy position
 
 Enemies always want to move closer to the enemy so we update their position based on the position of the player. The same idea applies to enemies as with players, new location becomes enemy number while old location is set to 0.
 
@@ -171,9 +171,99 @@ Enemies always want to move closer to the enemy so we update their position base
 .
 ```
 
-### possible collisions 
+### Possible collisions 
 
-A check is done with the list of all enemies, list of all projectiles and the sole player to see if any groups shares a similar location.
+A check is done with the list of all enemies and list of all projectiles to see if any groups shares a similar location. 
+
+```python
+.
+.
+.
+            list_of_enemies, player_projectiles, game_grid.cells, player.kill_count = sf.enemies_projectile_collisions(list_of_enemies,player_projectiles,game_grid.cells,player.kill_count)
+.
+.
+.
+```
+
+This is the definition for the collision function.
+
+```python
+.
+.
+.
+def enemies_projectile_collisions(loe,pp,gg,kc):
+    new_loe = []
+    new_pp = []
+    used_projectiles = []
+    
+    for i in range(len(loe)):
+        collision = 0
+        enemy_row = loe[i].position//len(gg)
+        enemy_col = loe[i].position%len(gg[0])
+
+        for j in range(len(pp)):
+            if enemy_row == pp[j][0] and enemy_col == pp[j][1]:
+                collision = 1
+                gg[enemy_row][enemy_col] = 0
+                used_projectiles.append(j)
+                kc += 1
+                break;
+
+        if not collision:
+            new_loe.append(loe[i])
+
+    for i in range(len(pp)):
+        if i not in used_projectiles:
+            new_pp.append(pp[i])
+
+    return new_loe, new_pp, gg, kc
+.
+.
+.
+```
+
+The play collision is done in a different function. The function checks if an enemy and player have the same location on the grid. Player however is not effected by their own projectiles. This collision is seperated because it changes the state of the game - from running to terminating.
+
+```python
+    game_state = sf.check_for_collisions(player,list_of_enemies)
+```
+
+This is the definition
+
+```python
+def check_for_collisions(p,loe):
+    for i in range(len(loe)):
+        if p.position == loe[i].position:
+            return 2    
+    return 1
+```
+
+### Respawning Enemies
+
+This just makes sure that there are an appropriate number of enemies on the grid. It only spawns them after you have killed an entire wave.
+
+```python
+            if len(list_of_enemies) == 0:
+                enemy_respawn_count += 1
+            if enemy_respawn_count == ENEMY_RESPAWN_TIME:
+                game_grid.cells, list_of_enemies = sf.generate_enemies(game_grid.cells,player.shape_sides)
+                enemy_respawn_count = 0    
+```
+
+## Displaying Updates
+
+Finally after all the updates to the grid and other status variables the changes are reflected on the small window display
+
+```python
+            screen.fill((0,100,200))
+            sf.display_grid(screen,game_grid)
+            display_shapes(screen,player,list_of_enemies)
+            display_kill_count_and_level(screen,font,player)
+```
+
+## How To Run
+
+
 
 
 
