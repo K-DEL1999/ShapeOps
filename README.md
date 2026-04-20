@@ -76,4 +76,6 @@ Once the screen and grid are rady we can begin rendering by entering an infinite
 .
 ```
 
+The game loop is broken up into multiple sections - 
+
 # 
