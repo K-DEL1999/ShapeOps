@@ -9,7 +9,7 @@ ShapeOps is a game inspired by love of mathemtics and my love of zombies. The pr
 
 # Layout Of Code
 
-The main code begins by defining variables that will set the boundaries of the window that will run the game
+The main code begins by defining variables that will set the boundaries of the window that will run the game. 
 
 ```python
 GRID_ROWS = 100
@@ -19,4 +19,40 @@ SCREEN_HEIGHT = SCREEN_WIDTH
 GAME_INFO_BAR_HEIGHT = SCREEN_WIDTH/14
 CELL_WIDTH = SCREEN_WIDTH/GRID_COLS
 CELL_HEIGHT = SCREEN_HEIGHT/GRID_ROWS
+```
+
+These values are used in the intialization found in the beginning of the main function.
+
+```python
+def run_pygame():
+    screen_dimensions = sf.initialize_screen_size(SCREEN_WIDTH,(SCREEN_HEIGHT+GAME_INFO_BAR_HEIGHT))
+    screen = sf.initialize_pygame(screen_dimensions)
+    clock = sf.initialize_clock()
+.
+.
+.
+```
+
+Following the screen initialization is the grid initialization. The grid enables allows the prorgam to keep track of everything on the screen.
+
+```python
+.
+.
+.
+    game_grid = sf.grid([[0]*GRID_ROWS for i in range(GRID_COLS)],GRID_ROWS,GRID_COLS,CELL_WIDTH,CELL_HEIGHT)
+    
+    player = sf.player(1,3,0,1,0)
+    player_projectiles = []
+
+    game_grid.cells = sf.place_player_on_grid(game_grid.cells,player.position//GRID_ROWS,player.position%GRID_COLS)
+    game_grid.cells, list_of_enemies = sf.generate_enemies(game_grid.cells,player.shape_sides)
+    
+    time_for_shot_count = 0
+    update_enemy_position_count = 0
+    enemy_respawn_count = 0
+    game_state = 0
+
+.
+.
+.
 ```
