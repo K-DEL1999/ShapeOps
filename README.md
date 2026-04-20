@@ -263,8 +263,12 @@ Finally after all the updates to the grid and other status variables the changes
 
 ## How To Run
 
+**ensure your device has python3 installed and has the pygames library downloaded**
 
-
+1. Clone repository
+2. Change to ShapeOps directory
+3. run `python3 ShapeMain.py`
+4. Enjoy !
 
 
 
